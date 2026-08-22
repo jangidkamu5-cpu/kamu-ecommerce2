@@ -1,0 +1,149 @@
+<!doctype html>
+<html lang="hi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Vigh Jash • E-Commerce Manager</title>
+<style>
+:root{--p:#0f4c81;--bg:#f4f7fb;--card:#fff;--text:#172033;--muted:#64748b;--green:#16803c;--red:#c62828}
+*{box-sizing:border-box}body{margin:0;font-family:Arial,sans-serif;background:var(--bg);color:var(--text)}
+header{background:linear-gradient(135deg,#0f4c81,#1769aa);color:white;padding:18px}
+header h1{margin:0;font-size:23px}header p{margin:5px 0 0;opacity:.9}
+nav{display:flex;gap:8px;overflow:auto;background:#fff;padding:10px;position:sticky;top:0;z-index:5;box-shadow:0 2px 8px #0001}
+nav button{border:0;background:#eaf2f8;color:#123;padding:10px 14px;border-radius:10px;font-weight:700;white-space:nowrap}
+nav button.active{background:var(--p);color:#fff}
+main{max-width:1100px;margin:auto;padding:15px}.section{display:none}.section.active{display:block}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:12px}
+.card{background:var(--card);border-radius:15px;padding:15px;box-shadow:0 3px 12px #0000000d}
+.stat{font-size:26px;font-weight:800}.muted{color:var(--muted);font-size:13px}
+form{background:#fff;padding:15px;border-radius:15px;box-shadow:0 3px 12px #0000000d}
+input,select,textarea{width:100%;padding:11px;margin:6px 0 11px;border:1px solid #d7dee8;border-radius:9px;font-size:15px}
+textarea{min-height:80px}label{font-weight:700;font-size:13px}
+.btn{background:var(--p);color:#fff;border:0;border-radius:9px;padding:11px 15px;font-weight:700;cursor:pointer}.danger{background:var(--red)}
+table{width:100%;border-collapse:collapse;background:#fff;border-radius:12px;overflow:hidden}
+th,td{padding:10px;border-bottom:1px solid #e8edf3;text-align:left;font-size:13px}th{background:#eef5fa}
+.badge{padding:4px 8px;border-radius:20px;background:#e8f5e9;color:var(--green);font-weight:700}
+.actions{display:flex;gap:8px;flex-wrap:wrap}.search{margin:12px 0}
+a{color:#0f4c81;font-weight:700;text-decoration:none}
+.small{font-size:12px}.footer{text-align:center;color:var(--muted);padding:30px 10px}
+</style>
+</head>
+<body>
+<header>
+  <h1>🛍️ Vigh Jash • E-Commerce Manager</h1>
+  <p>Orders • Products • Quantity • Source • Address • Customer Contact</p>
+</header>
+<nav>
+  <button class="active" onclick="show('home',this)">🏠 Home</button>
+  <button onclick="show('orders',this)">📦 New Orders</button>
+  <button onclick="show('products',this)">🛒 Products</button>
+  <button onclick="show('add',this)">➕ Add Order</button>
+  <button onclick="show('contact',this)">📞 My Contact</button>
+</nav>
+
+<main>
+<section id="home" class="section active">
+  <h2>Dashboard</h2>
+  <div class="grid">
+    <div class="card"><div class="muted">Total Orders</div><div class="stat" id="totalOrders">0</div></div>
+    <div class="card"><div class="muted">Pending Orders</div><div class="stat" id="pendingOrders">0</div></div>
+    <div class="card"><div class="muted">Products</div><div class="stat" id="totalProducts">0</div></div>
+    <div class="card"><div class="muted">Total Stock Qty</div><div class="stat" id="stockQty">0</div></div>
+  </div>
+  <div class="card" style="margin-top:15px">
+    <h3>🆕 Latest Orders</h3><div id="latest"></div>
+  </div>
+</section>
+
+<section id="orders" class="section">
+  <h2>📦 New Orders</h2>
+  <input class="search" id="orderSearch" placeholder="Customer / product / phone search..." oninput="renderOrders()">
+  <div style="overflow:auto"><table><thead><tr>
+    <th>Order</th><th>Customer</th><th>Product</th><th>Qty</th><th>Source</th><th>Address</th><th>Contact</th><th>Status</th><th>Action</th>
+  </tr></thead><tbody id="ordersBody"></tbody></table></div>
+</section>
+
+<section id="products" class="section">
+  <h2>🛒 Product List & Qty</h2>
+  <input class="search" id="productSearch" placeholder="Product search..." oninput="renderProducts()">
+  <div style="overflow:auto"><table><thead><tr><th>#</th><th>Product</th><th>Stock Qty</th><th>Buy ₹</th><th>Sell ₹</th><th>Profit/pc ₹</th></tr></thead>
+  <tbody id="productsBody"></tbody></table></div>
+</section>
+
+<section id="add" class="section">
+  <h2>➕ Add New Order</h2>
+  <form onsubmit="addOrder(event)">
+    <label>Customer Name</label><input id="customer" required>
+    <label>Mobile Number</label><input id="phone" inputmode="tel" required>
+    <label>Product</label><select id="product"></select>
+    <label>Quantity</label><input id="qty" type="number" min="1" value="1" required>
+    <label>Order कहाँ से आया?</label>
+    <select id="source"><option>WhatsApp</option><option>Instagram</option><option>YouTube</option><option>Meesho</option><option>Amazon</option><option>Flipkart</option><option>IndiaMART</option><option>Other</option></select>
+    <label>Full Address</label><textarea id="address" required></textarea>
+    <label>Order Note</label><textarea id="note" placeholder="Size, color, delivery note आदि"></textarea>
+    <button class="btn" type="submit">✅ Save Order</button>
+  </form>
+</section>
+
+<section id="contact" class="section">
+  <h2>📞 My Contact Details</h2>
+  <div class="card">
+    <p><b>Business/Brand:</b> Vigh Jash</p>
+    <p><b>📱 Mobile:</b> <a id="myPhone" href="tel:8949577434">8949577434</a></p>
+    <p><b>📧 Gmail:</b> <a id="myGmail" href="mailto:jangidkamu5@gmail.com">jangidkamu5@gmail.com</a></p>
+    <p><b>▶️ YouTube:</b> <a id="youtube" href="https://www.youtube.com/@kamu_yt09" target="_blank">@kamu_yt09</a></p>
+    <p><b>📸 Instagram:</b> <a id="instagram" href="https://www.instagram.com/Kamu_barmer_09" target="_blank">Kamu_barmer_09</a></p>
+    <p class="small">ऊपर के contact/social links को code में अपनी असली details से बदलें।</p>
+  </div>
+</section>
+
+<div class="footer">Vigh Jash E-Commerce Manager • Data आपके browser में save होता है।</div>
+</main>
+
+<script>
+const products=[
+["Vegetable Chopper",25,70],["Vegetable Peeler Set",25,99],["Silicone Spatula Set",20,179],
+["Oil Spray Bottle",20,149],["Kitchen Sink Strainer",30,79],["Storage Organizer",15,199],
+["Spice Rack",10,249],["Bottle Cleaning Brush",25,99],["Pav Bhaji Masher",20,99],
+["15-in-1 Kitchen Press",8,499],["LED Night Lamp",20,149],["Motion Sensor Light",15,249],
+["USB Mini Fan",15,349],["Mobile Stand",20,149],["Cable Protector",30,79],
+["Extension Board",15,249],["Car Cleaning Brush",20,149],["Microfiber Duster",20,129],
+["Car Seat Gap Filler",15,199],["Cleaning Sponge",30,69],["Adhesive Wall Hooks",30,79],
+["Mini Heat Sealer",15,249],["Digital Kitchen Scale",10,299],["Lint Remover",15,199],
+["Portable Mini Blender",8,699]
+].map((p,i)=>({id:i+1,name:p[0],qty:p[1],buy:Math.round(p[2]*.5),sell:p[2]}));
+
+let orders=JSON.parse(localStorage.getItem("vj_orders")||"[]");
+function save(){try{localStorage.setItem("vj_orders",JSON.stringify(orders))}catch(e){}}
+function show(id,btn){document.querySelectorAll('.section').forEach(x=>x.classList.remove('active'));document.getElementById(id).classList.add('active');document.querySelectorAll('nav button').forEach(x=>x.classList.remove('active'));btn.classList.add('active');if(id==='orders')renderOrders();if(id==='products')renderProducts();if(id==='home')renderHome();}
+function renderHome(){
+ document.getElementById('totalOrders').textContent=orders.length;
+ document.getElementById('pendingOrders').textContent=orders.filter(x=>x.status==='Pending').length;
+ document.getElementById('totalProducts').textContent=products.length;
+ document.getElementById('stockQty').textContent=products.reduce((a,b)=>a+b.qty,0);
+ document.getElementById('latest').innerHTML=orders.slice(-5).reverse().map(o=>`<div class="card" style="margin:8px 0"><b>${o.id}</b> • ${o.customer} • ${o.product} × ${o.qty}<br><span class="muted">${o.source} • ${o.phone} • ${o.status}</span></div>`).join('')||'<p class="muted">अभी कोई order नहीं है।</p>';
+}
+function renderOrders(){
+ let q=(document.getElementById('orderSearch')?.value||'').toLowerCase();
+ document.getElementById('ordersBody').innerHTML=orders.filter(o=>(o.customer+o.product+o.phone+o.source).toLowerCase().includes(q)).map((o,i)=>`<tr>
+ <td><b>${o.id}</b><br><span class="small">${o.date}</span></td><td>${o.customer}</td><td>${o.product}</td><td>${o.qty}</td><td>${o.source}</td>
+ <td>${o.address}<br><span class="small">${o.note||''}</span></td><td><a href="tel:${o.phone}">${o.phone}</a></td>
+ <td><select onchange="orders[${i}].status=this.value;save();renderOrders();renderHome()"><option ${o.status==='Pending'?'selected':''}>Pending</option><option ${o.status==='Packed'?'selected':''}>Packed</option><option ${o.status==='Shipped'?'selected':''}>Shipped</option><option ${o.status==='Delivered'?'selected':''}>Delivered</option><option ${o.status==='Cancelled'?'selected':''}>Cancelled</option></select></td>
+ <td><button class="btn danger" onclick="deleteOrder(${i})">Delete</button></td></tr>`).join('')||'<tr><td colspan="9">No orders</td></tr>';
+}
+function renderProducts(){
+ let q=(document.getElementById('productSearch')?.value||'').toLowerCase();
+ document.getElementById('productsBody').innerHTML=products.filter(p=>p.name.toLowerCase().includes(q)).map(p=>`<tr><td>${p.id}</td><td><b>${p.name}</b></td><td>${p.qty}</td><td>₹${p.buy}</td><td>₹${p.sell}</td><td><span class="badge">₹${p.sell-p.buy}</span></td></tr>`).join('');
+}
+function fillProducts(){document.getElementById('product').innerHTML=products.map(p=>`<option>${p.name}</option>`).join('')}
+function addOrder(e){
+ e.preventDefault();
+ const p=document.getElementById('product').value;
+ const o={id:'VJ-'+Date.now().toString().slice(-6),customer:customer.value,phone:phone.value,product:p,qty:+qty.value,source:source.value,address:address.value,note:note.value,status:'Pending',date:new Date().toLocaleString('hi-IN')};
+ orders.push(o);save();e.target.reset();qty.value=1;alert('Order save हो गया ✅');renderHome();show('orders',document.querySelectorAll('nav button')[1]);
+}
+function deleteOrder(i){if(confirm('यह order delete करें?')){orders.splice(i,1);save();renderOrders();renderHome()}}
+fillProducts();renderHome();
+</script>
+</body>
+</html>
